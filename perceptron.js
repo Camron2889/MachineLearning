@@ -67,6 +67,39 @@ this.ml = this.ml || {};
             this.biases[i] = Math.random() * 2 - 1;
         }
     };
+    
+    proto.toStaggeredArray = function() {
+        const numOut = this.numOutputs;
+        const numIn = this.numInputs;
+        const chromosome = [];
+        let i = 0;
+        for (let gene = 0; gene < numOut; gene++) {
+            chromosome[i] = this.biases[gene];
+            ++i;
+            for (let base = 0; base < numIn; base++) {
+                const wt = gene * numIn + base;
+                chromosome[i] = this.weights[wt];
+                ++i;
+            }
+        }
+        return chromosome;
+    };
+    
+    proto.fromStaggeredArray = function(chromosome) {
+        const numOut = this.numOutputs;
+        const numIn = this.numInputs;
+        
+        let i = 0;
+        for (let gene = 0; gene < numOut; gene++) {
+            this.biases[gene] = chromosome[i];
+            ++i;
+            for (let base = 0; base < numIn; base++) {
+                const wt = gene * numIn + base;
+                this.weights[wt] = chromosome[i];
+                ++i;
+            }
+        };
+    };
 
     //private
     proto._sigmoid = function(x) {
