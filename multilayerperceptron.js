@@ -9,10 +9,13 @@
         this.numLayers = arguments.length - 1;
         this.layers = [];
         
+        this.previousState = [];
+        
         for (let i = 0; i < this.numLayers; i++) {
             const numInputs = arguments[i];
             const numOutputs = arguments[i + 1];
             this.layers[i] = new ml.Perceptron(numInputs, numOutputs);
+            this.previousState[i] = this.layers[i].previousState;
         }
 
     };
@@ -30,6 +33,14 @@
         let cache = inputs;
         for (let i = 0; i < this.numLayers; i++) {
             cache = this.layers[i].calculate(cache);
+        }
+        return cache;
+    };
+    
+    proto.calculateWithState = function(inputs) {
+        let cache = inputs;
+        for (let i = 0; i < this.numLayers; i++) {
+            cache = this.layers[i].calculateWithState(cache);
         }
         return cache;
     };
@@ -63,8 +74,6 @@
             i += numBases;
         };
     };
-
-    //private
 
     //attach class to namespace
     ml.MultiLayerPerceptron = MultiLayerPerceptron;

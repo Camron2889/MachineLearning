@@ -11,6 +11,12 @@ this.ml = this.ml || {};
         this.numOutputs = numOutputs;
         this.numWeights = numInputs * numOutputs;
         
+        this.prevState = {
+            inputs: [],
+            synapses: [],
+            outputs: []
+        };
+        
         this.weights = [];
         for (let i = 0; i < this.numWeights; i++) {
             this.weights[i] = 0;
@@ -51,7 +57,8 @@ this.ml = this.ml || {};
             let sum = 0;
             for (let ipt = 0; ipt < numIn; ipt++) {
                 const wt = opt * numIn + ipt;
-                sum += this.weights[wt] * inputs[ipt];
+                const signal = this.weights[wt] * inputs[ipt];
+                sum += signal;
             }
             sum += this.biases[opt];
             results[opt] = this._activationFunction(sum);
@@ -59,6 +66,31 @@ this.ml = this.ml || {};
         return results;
     };
     
+    proto.calculateWithState = function(inputs) {
+        for (let i = 0; i < inputs.length; i++) {
+            this.prevState.inputs[i] = inputs[i];
+        }
+        
+        const numOut = this.numOutputs;
+        const numIn = this.numInputs;
+        const results = [];
+        for (let opt = 0; opt < numOut; opt++) {
+            let sum = 0;
+            for (let ipt = 0; ipt < numIn; ipt++) {
+                const wt = opt * numIn + ipt;
+                const signal = this.weights[wt] * inputs[ipt];
+                this.prevState.synapses[wt] = signal;
+                sum += signal;
+            }
+            sum += this.biases[opt];
+            const result = this._activationFunction(sum);
+            results[opt] = result;
+            this.prevState.outputs[opt] = result;
+        }
+        
+        return results;
+    };
+
     proto.randomize = function() {
         for (let i = 0; i < this.numWeights; i++) {
             this.weights[i] = Math.random() * 2 - 1;
