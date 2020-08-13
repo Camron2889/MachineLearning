@@ -11,7 +11,7 @@ this.ml = this.ml || {};
         this.numOutputs = numOutputs;
         this.numWeights = numInputs * numOutputs;
         
-        this.prevState = {
+        this.previousState = {
             inputs: [],
             synapses: [],
             outputs: []
@@ -79,13 +79,13 @@ this.ml = this.ml || {};
             for (let ipt = 0; ipt < numIn; ipt++) {
                 const wt = opt * numIn + ipt;
                 const signal = this.weights[wt] * inputs[ipt];
-                this.prevState.synapses[wt] = signal;
+                this.previousState.synapses[wt] = signal;
                 sum += signal;
             }
             sum += this.biases[opt];
             const result = this._activationFunction(sum);
             results[opt] = result;
-            this.prevState.outputs[opt] = result;
+            this.previousState.outputs[opt] = result;
         }
         
         return results;
