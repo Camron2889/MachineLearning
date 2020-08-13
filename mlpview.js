@@ -74,22 +74,52 @@
     
     proto.draw = function() {
         const ctx = this.context;
+        const previousState = this.mlp.previousState;
         const width = this.canvas.width;
         const height = this.canvas.height;
         
+        ctx.lineWidth = 0.3;
         ctx.clearRect(0, 0, width, height);
         
-        const nodes = this.nodePositions;
+        //draw synapses
+        for (let i = 0; i < previousState.length; i++) {
+            const layerState = previousState[i];
+            const layerPos1 = this.nodePositions[i];
+            const layerPos2 = this.nodePositions[i + 1];
+            
+            const numOut = layerState.outputs.length;
+            const numIn = layerState.inputs.length;    
+            
+            for (let opt = 0; opt < numOut; opt++) {
+                for (let ipt = 0; ipt < numIn; ipt++) {
+                    const wt = opt * numIn + ipt;
+                    
+                    const pos1 = layerPos1[ipt];
+                    const pos2 = layerPos2[opt];
+                    
+                    const value = layerState.synapses[wt];
+                    
+                    const color = this._gradientMap(value);
+                    ctx.strokeStyle = `rgba(${color.r*255},${color.g*255},${color.b*255},${color.a})`;
+                    ctx.beginPath();
+                    ctx.moveTo(pos1.x, pos1.y);
+                    ctx.lineTo(pos2.x, pos2.y);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        
         
         //draw nodes
-        for (let i = 0; i < nodes.length; i++) {
-            let col = nodes[i];
+        for (let i = 0; i < this.nodePositions.length; i++) {
+            const col = this.nodePositions[i];
             for (let j = 0; j < col.length; j++) {
                 let value;
                 if (i === 0) {
-                    value = this.mlp.previousState[0].inputs[j];
+                    value = previousState[0].inputs[j];
                 } else {
-                    value = this.mlp.previousState[i - 1].outputs[j];
+                    value = previousState[i - 1].outputs[j];
                 };
                 const color = this._gradientMap(value);
                 ctx.fillStyle = `rgba(${color.r*255},${color.g*255},${color.b*255},${color.a})`;
