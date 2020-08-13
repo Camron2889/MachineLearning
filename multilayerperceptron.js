@@ -6,7 +6,10 @@
     
     //constructor
     const MultiLayerPerceptron = function(/*numInputs, [numHidden1, numHidden2, ...] numOutputs*/) {
+        this.numInputs = arguments[0];
+        this.numOutputs = arguments[arguments.length - 1];
         this.numLayers = arguments.length - 1;
+        
         this.layers = [];
         
         this.previousState = [];
