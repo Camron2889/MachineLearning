@@ -68,7 +68,7 @@ this.ml = this.ml || {};
     
     proto.calculateWithState = function(inputs) {
         for (let i = 0; i < inputs.length; i++) {
-            this.prevState.inputs[i] = inputs[i];
+            this.previousState.inputs[i] = inputs[i];
         }
         
         const numOut = this.numOutputs;
